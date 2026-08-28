@@ -276,7 +276,7 @@
         "elevationLoss": "Dislivello negativo",
         "estimatedSteps": "Passi stimati",
         "expandChart": "Espandi grafico",
-        "expeditionDashboard": "Cruscotto della spedizione.",
+        "expeditionDashboard": "Dashboard",
         "firebaseState": "Stato di Firebase",
         "firstTimestamp": "Primo timestamp",
         "gpxRouteBounds": "Limiti del percorso GPX",
