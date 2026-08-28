@@ -46,7 +46,7 @@
         "hiddenMilestones": "Hidden milestones",
         "home": "Home",
         "journey": "Journey",
-        "keepMovingWest": "KEEP MOVING NORTH.",
+        "keepMovingWest": "KEEP MOVING SOUTH.",
         "loadingMap": "LOADING MAP…",
         "language": "Language",
         "languageSelector": "Language selector",

@@ -46,7 +46,7 @@
         "hiddenMilestones": "Verborgene Meilensteine",
         "home": "Start",
         "journey": "Reise",
-        "keepMovingWest": "WEITER NACH NORDEN.",
+        "keepMovingWest": "WEITER NACH SÜDEN.",
         "loadingMap": "KARTE WIRD GELADEN…",
         "language": "Sprache",
         "languageSelector": "Sprachauswahl",

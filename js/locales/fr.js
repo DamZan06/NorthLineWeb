@@ -46,7 +46,7 @@
         "hiddenMilestones": "Jalons cachés",
         "home": "Accueil",
         "journey": "Voyage",
-        "keepMovingWest": "CONTINUER VERS LE NORD.",
+        "keepMovingWest": "CONTINUER VERS LE SUD.",
         "loadingMap": "CHARGEMENT DE LA CARTE…",
         "language": "Langue",
         "languageSelector": "Sélecteur de langue",

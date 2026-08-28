@@ -915,6 +915,9 @@ html{background:#131f1f}body{background:transparent;isolation:isolate}body::befo
 .achievement-medal{width:136px;height:136px;overflow:hidden;padding:0;box-sizing:border-box;isolation:isolate}
 .achievement-medal>img{position:relative;z-index:1;object-fit:cover;transform:scale(1.24);transform-origin:center}
 .achievement-badge[data-badge-id="t80"] .achievement-medal>img{transform:scale(1.42)}
+.achievement-line span{background:linear-gradient(90deg,var(--route-start,#318fbd),var(--route-finish,#f06432))}
+.horizon-map-legend .legend-actual{border:0;height:4px;border-radius:999px;background:linear-gradient(90deg,var(--route-start,#318fbd),var(--route-finish,#f06432))}
+.horizon-current-icon span{background:var(--completed-route-current,var(--route-start,#318fbd))}
 .achievement-line{top:86px}
 .achievement-lock,.achievement-check{z-index:2}
 .achievement-category[data-badge-count="1"] .achievement-track{min-width:0}

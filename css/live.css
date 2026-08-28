@@ -130,7 +130,7 @@ body {
   display: block;
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--completed-route-start, #ffaa45), var(--completed-route-current, #ffaa45));
+  background: linear-gradient(90deg, var(--completed-route-start, #318fbd), var(--completed-route-current, #318fbd));
   transition: width .35s ease, background .35s ease;
 }
 
@@ -190,11 +190,11 @@ body {
 }
 
 .horizon-actual-track {
-  filter: drop-shadow(0 1px 2px rgba(45,22,0,.9)) drop-shadow(0 0 3px rgba(255,122,0,.35));
+  filter: drop-shadow(0 1px 2px rgba(5,20,30,.9)) drop-shadow(0 0 3px rgba(49,143,189,.34));
 }
 
-.legend-planned { border-top-color:#75aeb8; opacity:.72; }
-.legend-actual { height:4px;border:0;border-radius:999px;background:#ffaa45; }
+.legend-planned { border-top-color:#d7e1e4; opacity:.65; }
+.legend-actual { height:4px;border:0;border-radius:999px;background:linear-gradient(90deg,var(--route-start,#318fbd),var(--route-finish,#f06432)); }
 
 .horizon-user-marker {
   filter: drop-shadow(0 0 6px #168cff);

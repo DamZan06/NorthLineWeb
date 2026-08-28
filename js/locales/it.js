@@ -46,7 +46,7 @@
         "hiddenMilestones": "Traguardi nascosti",
         "home": "Home",
         "journey": "Viaggio",
-        "keepMovingWest": "CONTINUA VERSO NORD.",
+        "keepMovingWest": "CONTINUA VERSO SUD.",
         "loadingMap": "CARICAMENTO MAPPA...",
         "language": "Lingua",
         "languageSelector": "Selettore della lingua",

@@ -13,8 +13,8 @@
     let plannedRouteBounds = null;
     let tileLayers = null;
     let activeTileKey = 'Topographic';
-    const TRACK_START_COLOR = '#ffaa45';
-    const TRACK_FINISH_COLOR = '#d93424';
+    const TRACK_START_COLOR = '#318fbd';
+    const TRACK_FINISH_COLOR = '#f06432';
     const TRACK_GRADIENT_ID = 'horizon-completed-gradient';
     let currentTrackProgress = 0;
 
@@ -60,9 +60,10 @@
             path.setAttribute('stroke', `url(#${TRACK_GRADIENT_ID})`);
         }
         const legend = document.querySelector('.legend-actual');
-        if (legend) legend.style.background = `linear-gradient(90deg, ${TRACK_START_COLOR}, ${currentColor})`;
+        if (legend) legend.style.background = `linear-gradient(90deg, ${TRACK_START_COLOR}, ${TRACK_FINISH_COLOR})`;
         document.documentElement.style.setProperty('--completed-route-start', TRACK_START_COLOR);
         document.documentElement.style.setProperty('--completed-route-current', currentColor);
+        document.documentElement.style.setProperty('--completed-route-finish', TRACK_FINISH_COLOR);
         return currentColor;
     }
 
@@ -151,7 +152,7 @@
 
         const route = window.L.geoJSON(geojson, {
             style: {
-                color: '#75aeb8',
+                color: '#d7e1e4',
                 weight: 4,
                 opacity: 0.72,
                 dashArray: '7 7', pane:'plannedRoute', className:'horizon-planned-route'
