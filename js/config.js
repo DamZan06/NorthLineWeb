@@ -1,16 +1,17 @@
 (function () {
     const config = {
-        projectName: 'HORIZON',
+        projectName: 'NorthLine 2.0',
         expeditionYear: 2026,
         startDateIso: '2026-08-31T04:00:00+02:00',
-        startLocation: 'Piz Chavalatsch',
-        finishLocation: 'Chancy',
-        expectedDistanceKm: 500,
-        expectedElevationM: 10000,
+        startLocation: 'Bargen',
+        finishLocation: 'Chiasso',
+        achievementDirection: 'forward',
+        expectedDistanceKm: 300,
+        expectedElevationM: 7000,
         routeGpxUrl: 'data/route/Horizon.gpx',
         routeGeoJsonUrl: 'data/route/horizon-route.geojson',
         routeMetaUrl: 'data/route/horizon-route-meta.json',
-        // Current public tracker backend; visual branding remains exclusively HORIZON.
+        // Current public tracker backend; kept separate from the public NorthLine 2.0 branding.
         firebaseURL: 'https://northline-a4eaa-default-rtdb.europe-west1.firebasedatabase.app/livetrack/points.json',
         contentDatabaseURL: 'https://northline-a4eaa-default-rtdb.europe-west1.firebasedatabase.app',
         contentDatabasePath: 'content',

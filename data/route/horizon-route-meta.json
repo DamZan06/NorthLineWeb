@@ -1,20 +1,20 @@
 {
-  "generatedFrom": "Horizon.gpx",
-  "pointCount": 48797,
-  "distanceKm": 520.627,
-  "elevationGainM": 10255,
+  "generatedFrom": "NorthLine.gpx",
+  "pointCount": 27158,
+  "distanceKm": 330.787,
+  "elevationGainM": 4495,
   "start": {
-    "lat": 46.6112314904,
-    "lng": 10.4486051187
+    "lat": 47.8082208779,
+    "lng": 8.5676563778
   },
   "finish": {
-    "lat": 46.1320502409,
-    "lng": 5.9563402346
+    "lat": 45.8259066594,
+    "lng": 9.0140666007
   },
   "bounds": {
-    "south": 46.1206747104,
-    "west": 5.9562368329,
-    "north": 46.8498241256,
-    "east": 10.4920959565
+    "south": 45.8179831064,
+    "west": 8.4502133926,
+    "north": 47.8109722167,
+    "east": 9.0436523174
   }
 }

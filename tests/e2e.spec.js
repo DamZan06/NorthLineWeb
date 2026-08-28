@@ -40,9 +40,9 @@ async function runPageChecks(page, url, expectedTitle) {
   expect(errors).toEqual([]);
 }
 
-test.describe('HORIZON site smoke E2E', () => {
+test.describe('NorthLine 2.0 site smoke E2E', () => {
   test('home page loads without browser errors', async ({ page }) => {
-    await runPageChecks(page, 'http://localhost:4173/index.html', 'HORIZON');
+    await runPageChecks(page, 'http://localhost:4173/index.html', 'NorthLine 2.0');
     await expect(page.locator('#homeStatusLabel')).toHaveText(/Not started|Started|Paused|Arrived/);
     await expect(page.locator('.status-grid .status-pill:not([hidden])')).toHaveCount(1);
   });
@@ -54,7 +54,7 @@ test.describe('HORIZON site smoke E2E', () => {
   });
 
   test('project page loads', async ({ page }) => {
-    await runPageChecks(page, 'http://localhost:4173/project.html', 'HORIZON');
+    await runPageChecks(page, 'http://localhost:4173/project.html', 'NorthLine 2.0');
     await expect(page.locator('h1, h2').first()).toBeVisible();
   });
 
@@ -108,7 +108,7 @@ test.describe('HORIZON site smoke E2E', () => {
     expect(await page.locator('.horizon-actual-track').evaluate(path => path.ownerSVGElement.getBoundingClientRect().width)).toBeGreaterThan(0);
     await page.locator('img.horizon-finish-icon').scrollIntoViewIfNeeded(); await expect(page.locator('img.horizon-finish-icon')).toBeVisible(); await expect(page.locator('img.horizon-finish-icon')).toHaveAttribute('src',/finish-flag\.gif/); await page.locator('#centerLiveBtn').click();
     await expect(page.locator('.horizon-start-icon')).toBeVisible(); await expect(page.locator('#mapLayerBtn')).toBeVisible();
-    expect(await page.evaluate(()=>({route:window.HorizonMap.getRouteLayer().getLayers()[0].getLayers()[0].getLatLngs().length,track:Boolean(window.HorizonMap.getActualTrack()),current:Boolean(window.HorizonMap.getLiveMarker()),start:Boolean(window.HorizonMap.getStartMarker()),finish:Boolean(window.HorizonMap.getFinishMarker())}))).toEqual({route:48797,track:true,current:true,start:true,finish:true});
+    expect(await page.evaluate(()=>({route:window.HorizonMap.getRouteLayer().getLayers()[0].getLayers()[0].getLatLngs().length,track:Boolean(window.HorizonMap.getActualTrack()),current:Boolean(window.HorizonMap.getLiveMarker()),start:Boolean(window.HorizonMap.getStartMarker()),finish:Boolean(window.HorizonMap.getFinishMarker())}))).toEqual({route:27158,track:true,current:true,start:true,finish:true});
     await page.evaluate(() => { window.__mapLayersBeforeUpdate = {
       route: window.HorizonMap.getRouteLayer().getLayers()[0], track: window.HorizonMap.getActualTrack(),
       start: window.HorizonMap.getStartMarker(), finish: window.HorizonMap.getFinishMarker()

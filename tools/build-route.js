@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const gpxPath = path.join(root, 'data', 'route', 'Horizon.gpx');
+const gpxPath = path.join(root, 'data', 'route', 'NorthLine.gpx');
 const outputPath = path.join(root, 'data', 'route', 'horizon-route.geojson');
 const metaPath = path.join(root, 'data', 'route', 'horizon-route-meta.json');
 
@@ -18,7 +18,7 @@ function buildMeta(points) {
   // Ignore sub-metre GPX altitude jitter while retaining genuine climbing.
   points.forEach((point,index)=>{bounds.south=Math.min(bounds.south,point[1]);bounds.north=Math.max(bounds.north,point[1]);bounds.west=Math.min(bounds.west,point[0]);bounds.east=Math.max(bounds.east,point[0]);if(index){distance+=distanceKm(points[index-1],point);const delta=point[2]-points[index-1][2];if(Number.isFinite(delta)&&delta>.75&&delta<500)gain+=delta;}});
   const loc=(p)=>({lat:p[1],lng:p[0]});
-  return { generatedFrom:'Horizon.gpx', pointCount:points.length, distanceKm:Number(distance.toFixed(3)), elevationGainM:Math.round(gain), start:loc(points[0]), finish:loc(points.at(-1)), bounds };
+  return { generatedFrom:'NorthLine.gpx', pointCount:points.length, distanceKm:Number(distance.toFixed(3)), elevationGainM:Math.round(gain), start:loc(points[0]), finish:loc(points.at(-1)), bounds };
 }
 
 function buildGeoJsonFromPoints(points) {
@@ -27,8 +27,8 @@ function buildGeoJsonFromPoints(points) {
     features: [{
       type: 'Feature',
       properties: {
-        name: 'HORIZON route',
-        source: 'Horizon.gpx'
+        name: 'NorthLine 2.0 route',
+        source: 'NorthLine.gpx'
       },
       geometry: {
         type: 'LineString',
@@ -43,7 +43,7 @@ function main() {
   const coordinates = parseGpxToLineString(gpxText);
 
   if (!coordinates.length) {
-    throw new Error('No GPX track points found in data/route/Horizon.gpx');
+    throw new Error('No GPX track points found in data/route/NorthLine.gpx');
   }
 
   const geojson = buildGeoJsonFromPoints(coordinates);
