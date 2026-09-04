@@ -1,0 +1,42 @@
+name: Sync from NorthLine
+
+on:
+  push:
+    paths:
+      - '.github/workflows/sync-from-northline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout NorthLineWeb
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone live NorthLine source
+        run: |
+          git clone --depth 1 https://github.com/DamZan06/northline.git "$RUNNER_TEMP/northline-source"
+
+      - name: Mirror NorthLine into NorthLineWeb
+        run: |
+          rsync -a --delete \
+            --exclude '.git/' \
+            --exclude '.github/workflows/sync-from-northline.yml' \
+            "$RUNNER_TEMP/northline-source/" ./
+
+      - name: Commit synchronized copy
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "NorthLineWeb is already synchronized."
+            exit 0
+          fi
+          git commit -m "sync: mirror current NorthLine into NorthLineWeb"
+          git push origin HEAD:main
