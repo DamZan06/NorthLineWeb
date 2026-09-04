@@ -1,17 +1,30 @@
 {
-  "name": "horizon-web",
+  "name": "garmin-test",
   "version": "1.0.0",
-  "private": true,
-  "description": "HorizonWeb static site local environment",
+  "description": "",
+  "main": "server.js",
   "scripts": {
-    "serve": "node tools/serve.js",
-    "build:route": "node tools/build-route.js",
-    "test": "node tools/js-syntax-check.js && node tools/i18n-check.js && node tools/unit-test.js && node tools/smoke-test.js",
-    "test:e2e": "playwright test tests/e2e.spec.js",
-    "start": "node tools/serve.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
-  "devDependencies": {
-    "@playwright/test": "^1.62.1",
-    "playwright": "^1.62.1"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.18.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "firebase-admin": "^14.1.0",
+    "proj4": "^2.20.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DamZan06/garmin-live-track.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DamZan06/garmin-live-track/issues"
+  },
+  "homepage": "https://github.com/DamZan06/garmin-live-track#readme"
 }
