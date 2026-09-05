@@ -66,3 +66,13 @@ check('real walked distance keeps detours', Math.abs(bellinzonaSummary.coveredDi
 check('remaining distance follows GPX position, not walked distance', bellinzonaSummary.remainingDistanceKm>60&&bellinzonaSummary.remainingDistanceKm<70);
 check('completion follows GPX position, not walked distance', bellinzonaSummary.completionPercent>75&&bellinzonaSummary.completionPercent<85);
 check('route progress is exposed separately from walked distance', bellinzonaSummary.routeProgressKm<bellinzonaSummary.coveredDistanceKm);
+
+// End-of-route regression: simulate the tracker exactly on the third-last point of the generated GPX route.
+const thirdLastCoordinate=routeCoordinates.at(-3);
+const thirdLastProjection=context.window.HorizonRoute.locateProgress({latitude:thirdLastCoordinate[1],longitude:thirdLastCoordinate[0]},generatedGeoJson);
+check('third-last GPX point projects to the final route metres', thirdLastProjection&&thirdLastProjection.progressKm>generatedRouteMeta.distanceKm-0.1);
+const thirdLastPoint={...active[1],latitude:thirdLastCoordinate[1],longitude:thirdLastCoordinate[0],cumulativeDistanceKm:generatedRouteMeta.distanceKm+10};
+const thirdLastSummary=engine.calculateSummary({points:[active[0],thirdLastPoint],routeMeta:generatedRouteMeta,routeGeometry:generatedGeoJson,now:170000});
+check('third-last GPX point is treated as finished inside the 20 m finish radius', thirdLastSummary.state==='finished'&&thirdLastSummary.remainingDistanceKm===0&&thirdLastSummary.completionPercent===100);
+check('third-last GPX test preserves extra walked distance', thirdLastSummary.coveredDistanceKm>thirdLastSummary.routeProgressKm+9.8);
+console.log(`THIRD_LAST_RESULT walked=${thirdLastSummary.coveredDistanceKm.toFixed(3)}km route=${thirdLastSummary.routeProgressKm.toFixed(3)}km remaining=${thirdLastSummary.remainingDistanceKm.toFixed(3)}km completion=${thirdLastSummary.completionPercent.toFixed(2)}% state=${thirdLastSummary.state}`);
