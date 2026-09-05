@@ -52,12 +52,17 @@
 
         return selected ? { eta: Number(now) + (Number(remainingDistanceKm) / Number(selected[1])) * 3600000, basis: selected[0], speedKmh: Number(selected[1]) } : { eta: null, basis: null, speedKmh: null };
     }
-    function calculateSummary({ points = [], routeMeta, now = Date.now(), forcedAdminState = '' }) {
+
+    function calculateSummary({ points = [], routeMeta, routeGeometry = null, now = Date.now(), forcedAdminState = '' }) {
         const list = points.filter((p)=>valid(p.latitude)&&valid(p.longitude)&&valid(p.timestamp)).slice().sort((a,b)=>a.timestamp-b.timestamp);
         const plannedDistanceKm = valid(routeMeta?.distanceKm) ? Number(routeMeta.distanceKm) : Number(window.HorizonConfig?.expectedDistanceKm || 500);
         const latestPoint=list.at(-1)||null, firstPoint=list[0]||null;
+
+        // This is the real distance walked from the tracker. It intentionally includes detours,
+        // shopping stops and wrong turns, and is no longer capped at the planned GPX distance.
         const recordedDistance=valid(latestPoint?.cumulativeDistanceKm)?Number(latestPoint.cumulativeDistanceKm):window.HorizonStats.routeDistance(list);
-        const coveredDistanceKm=window.HorizonStats.clamp(recordedDistance,0,plannedDistanceKm);
+        const coveredDistanceKm=Math.max(0, Number(recordedDistance) || 0);
+
         let movingTimeMs=0,movingDistanceKm=0,maxSpeedKmh=0;
         const movingSamples=[];
         for(let i=1;i<list.length;i++){
@@ -67,34 +72,53 @@
             if(valid(speed)&&speed>0.5&&speed<80&&delta<=300000){movingTimeMs+=delta;movingDistanceKm+=segmentKm;movingSamples.push({timestamp:list[i].timestamp,speed});}
             if(valid(speed)&&speed<80)maxSpeedKmh=Math.max(maxSpeedKmh,speed);
         }
+
         const elapsedTimeMs=firstPoint&&latestPoint?Math.max(0,latestPoint.timestamp-firstPoint.timestamp):0;
         const averageSpeedKmh=elapsedTimeMs>0?coveredDistanceKm/(elapsedTimeMs/3600000):null;
         const movingAverageSpeedKmh=movingTimeMs>0?movingDistanceKm/(movingTimeMs/3600000):null;
         const recent=movingSamples.filter((sample)=>latestPoint&&sample.timestamp>=latestPoint.timestamp-3600000);
         const recentMovingSpeedKmh=recent.length?recent.reduce((sum,sample)=>sum+sample.speed,0)/recent.length:null;
+
         const distanceToFinishKm = latestPoint && routeMeta?.finish
             ? window.HorizonStats.distanceKm(latestPoint, routeMeta.finish)
             : null;
         const isAtFinish = Number.isFinite(distanceToFinishKm) && distanceToFinishKm <= 0.02;
-        const remainingDistanceKm=isAtFinish ? 0 : Math.max(0,plannedDistanceKm-coveredDistanceKm);
-        const completionPercent=isAtFinish ? 100 : window.HorizonStats.clamp(coveredDistanceKm/plannedDistanceKm*100,0,100);
+
+        // Route completion is based on the athlete's current position projected onto the GPX,
+        // not on total kilometres physically walked. This prevents detours from consuming the
+        // remaining route distance.
+        const routeLocation = latestPoint && routeGeometry && window.HorizonRoute?.locateProgress
+            ? window.HorizonRoute.locateProgress(latestPoint, routeGeometry)
+            : null;
+        const fallbackRouteProgressKm = window.HorizonStats.clamp(coveredDistanceKm,0,plannedDistanceKm);
+        const routeProgressKm = isAtFinish
+            ? plannedDistanceKm
+            : valid(routeLocation?.progressKm)
+                ? window.HorizonStats.clamp(Number(routeLocation.progressKm),0,plannedDistanceKm)
+                : fallbackRouteProgressKm;
+        const remainingDistanceKm=isAtFinish ? 0 : Math.max(0,plannedDistanceKm-routeProgressKm);
+        const completionPercent=isAtFinish ? 100 : window.HorizonStats.clamp(routeProgressKm/plannedDistanceKm*100,0,100);
         const finished = isAtFinish;
+
         const state=window.HorizonStatus.getExpeditionState({now,startDate:window.HorizonConfig.startDateIso,hasValidPoints:Boolean(list.length),latestPointTimestamp:latestPoint?.timestamp,trackerState:latestPoint?.trackerState,finished,forcedAdminState});
         const etaResult=calculateEta({remainingDistanceKm,recentMovingSpeedKmh,movingAverageSpeedKmh,averageSpeedKmh,latestPointTimestamp:latestPoint?.timestamp,now,pointCount:list.length,finished});
         const heartRates=list.map(p=>Number(p.heartRate)).filter(v=>valid(v)&&v>30&&v<240);
         const heartRateBpm = valid(latestPoint?.heartRate) ? Number(latestPoint.heartRate) : null;
         const caloriesBurned = estimateCaloriesBurnedKcal(coveredDistanceKm, Math.max(0, elapsedTimeMs / 1000), window.HorizonStats.elevationGain(list), heartRateBpm);
         const waterLostLiters = estimateWaterLostLiters(coveredDistanceKm, Math.max(0, elapsedTimeMs / 1000), window.HorizonStats.elevationGain(list), heartRateBpm);
-        return {started:Boolean(list.length),state,plannedDistanceKm,plannedElevationGainM:Number(routeMeta?.elevationGainM)||null,coveredDistanceKm,remainingDistanceKm,completionPercent,completedAt:finished?latestPoint?.timestamp||null:null,actualStartTimestamp:firstPoint?.timestamp||null,elapsedTimeMs,movingTimeMs,stoppedTimeMs:Math.max(0,elapsedTimeMs-movingTimeMs),currentSpeedKmh:valid(latestPoint?.speed)?Number(latestPoint.speed):null,averageSpeedKmh,movingAverageSpeedKmh,recentMovingSpeedKmh,maxSpeedKmh,currentAltitudeM:valid(latestPoint?.altitude)?Number(latestPoint.altitude):null,actualElevationGainM:window.HorizonStats.elevationGain(list),actualElevationLossM:window.HorizonStats.elevationLoss(list),currentHeartRateBpm:heartRateBpm,averageHeartRateBpm:heartRates.length?heartRates.reduce((a,b)=>a+b,0)/heartRates.length:null,maxHeartRateBpm:heartRates.length?Math.max(...heartRates):null,latestPoint,latestPointTimestamp:latestPoint?.timestamp||null,signalAgeMs:latestPoint?Math.max(0,now-latestPoint.timestamp):null,eta:etaResult.eta,etaBasis:etaResult.basis,etaSpeedKmh:etaResult.speedKmh,caloriesBurned,waterLostLiters,routeMeta,points:list};
+
+        return {started:Boolean(list.length),state,plannedDistanceKm,plannedElevationGainM:Number(routeMeta?.elevationGainM)||null,coveredDistanceKm,routeProgressKm,remainingDistanceKm,completionPercent,completedAt:finished?latestPoint?.timestamp||null:null,actualStartTimestamp:firstPoint?.timestamp||null,elapsedTimeMs,movingTimeMs,stoppedTimeMs:Math.max(0,elapsedTimeMs-movingTimeMs),currentSpeedKmh:valid(latestPoint?.speed)?Number(latestPoint.speed):null,averageSpeedKmh,movingAverageSpeedKmh,recentMovingSpeedKmh,maxSpeedKmh,currentAltitudeM:valid(latestPoint?.altitude)?Number(latestPoint.altitude):null,actualElevationGainM:window.HorizonStats.elevationGain(list),actualElevationLossM:window.HorizonStats.elevationLoss(list),currentHeartRateBpm:heartRateBpm,averageHeartRateBpm:heartRates.length?heartRates.reduce((a,b)=>a+b,0)/heartRates.length:null,maxHeartRateBpm:heartRates.length?Math.max(...heartRates):null,latestPoint,latestPointTimestamp:latestPoint?.timestamp||null,signalAgeMs:latestPoint?Math.max(0,now-latestPoint.timestamp):null,eta:etaResult.eta,etaBasis:etaResult.basis,etaSpeedKmh:etaResult.speedKmh,caloriesBurned,waterLostLiters,routeMeta,routeLocation,points:list};
     }
+
     async function loadSummary(options){
-        const [points,routeMeta,liveStatusOverride]=await Promise.all([
+        const [points,routeMeta,routeGeometry,liveStatusOverride]=await Promise.all([
             window.HorizonFirebase.fetchLiveTrack(options),
             window.HorizonRoute.fetchMetadata(),
+            window.HorizonRoute.fetchGeometry?.().catch(()=>null),
             Promise.resolve().then(()=>window.HorizonFirebase.fetchLiveStatusOverride?.()).catch(()=>null)
         ]);
         const forcedAdminState = liveStatusOverride?.forcedStatus === 'ended' ? 'ended' : liveStatusOverride?.forcedStatus === 'finished' ? 'finished' : '';
-        return calculateSummary({points,routeMeta,forcedAdminState});
+        return calculateSummary({points,routeMeta,routeGeometry,forcedAdminState});
     }
     window.HorizonExpedition={calculateEta,calculateSummary,estimateCaloriesBurnedKcal,estimateWaterLostLiters,loadSummary};
 })();
